@@ -18,5 +18,5 @@ export class AppComponent implements OnInit {
    if (token) {
      this.authService.decodedToken = this.jwtHelper.decodeToken(token);
    }
-  }  
+  }
 }
