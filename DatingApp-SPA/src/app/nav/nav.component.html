@@ -4,10 +4,10 @@
 
       <ul *ngIf="loggedIn()" class="navbar-nav mr-auto">
         <li class="nav-item" routerLinkActive="active" >
-          <a class="nav-link text-light" [routerLink]="['/members']">Matches</a>
+          <a class="nav-link text-light" [routerLink]="['/members']">People</a>
         </li>
         <li class="nav-item" routerLinkActive="active">
-          <a class="nav-link text-light" [routerLink]="['/lists']">Lists</a>
+          <a class="nav-link text-light" [routerLink]="['/lists']">Favourites</a>
         </li>
         <li class="nav-item" routerLinkActive="active">
           <a class="nav-link text-light" [routerLink]="['/messages']">Messages</a>
@@ -20,7 +20,7 @@
           </a>
         
           <div class="dropdown-menu mt-3" *dropdownMenu>
-            <a class="dropdown-item" href="#"><i class="fa fa-user"></i> Edit Profile</a>
+            <a class="dropdown-item" [routerLink]="['/member/edit']"><i class="fa fa-user"></i> Edit Profile</a>
             <div class="dropdown-divider"></div>
             <a class="dropdown-item" (click)="logout()"><i class="fa fa-sign-out"></i> Logout</a>
           </div>
