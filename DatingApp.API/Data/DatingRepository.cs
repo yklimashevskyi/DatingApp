@@ -26,6 +26,11 @@ namespace DatingApp.API.Data
             _context.Remove(entity);
         }
 
+        public async Task<Like> GetLike(int userId, int recipientId)
+        {
+            return await _context.Likes.FirstOrDefaultAsync(item => item.LikerId == userId && item.LikeeId == recipientId);
+        }
+
         public async Task<Photo> GetMainPhotoForUser(int userId)
         {
             return await _context.Photos.FirstOrDefaultAsync(item => item.UserId == userId && item.isMain);
@@ -53,6 +58,16 @@ namespace DatingApp.API.Data
                 users = users.Where(item=>item.Gender == userParams.Gender);
             }
 
+            if (userParams.Likers) {
+                var userLikers = await GetUserLikes(userParams.UserId, userParams.Likers);
+                users = users.Where(item=>userLikers.Contains(item.Id));
+            }
+
+            if (userParams.Likees) {
+                var userLikees = await GetUserLikes(userParams.UserId, userParams.Likers);
+                users = users.Where(item=>userLikees.Contains(item.Id));
+            }
+
             if (userParams.MinAge != 18 || userParams.MaxAge != 99) {
                 var minDateOfBirth = DateTime.Today.AddYears(-userParams.MaxAge - 1);
                 var maxDateOfBirth = DateTime.Today.AddYears(-userParams.MinAge);
@@ -72,6 +87,19 @@ namespace DatingApp.API.Data
             }
 
             return await PagedList<User>.CreateAsync(users, userParams.PageNumber, userParams.PageSize);
+        }
+
+        private async Task<IEnumerable<int>> GetUserLikes(int id, bool likers) {
+            var user = await _context.Users
+                .Include(item=>item.Likers)
+                .Include(item=>item.Likees)
+                .FirstOrDefaultAsync(item=>item.Id == id);
+
+            if (likers) {
+                return user.Likers.Where(item=>item.LikeeId == id).Select(item=>item.LikerId);
+            } else {
+                return user.Likees.Where(item=>item.LikerId == id).Select(item=>item.LikeeId);
+            }
         }
 
         public async Task<bool> SaveAll()
